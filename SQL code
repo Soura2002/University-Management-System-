@@ -1,0 +1,131 @@
+-- ========================
+-- Department Table
+-- ========================
+CREATE TABLE Department (
+    Did INT PRIMARY KEY,
+    Dname VARCHAR(100) NOT NULL,
+    year_started YEAR,
+    OfficeLocation VARCHAR(100)
+);
+
+-- ========================
+-- Faculty Table
+-- ========================
+CREATE TABLE Faculty (
+    Emp_id INT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    session VARCHAR(50),
+    salary DECIMAL(10,2),
+    mobileNo VARCHAR(15),
+    Dept_id INT,
+    Supervisor_id INT,
+    FOREIGN KEY (Dept_id) REFERENCES Department(Did),
+    FOREIGN KEY (Supervisor_id) REFERENCES Faculty(Emp_id)
+);
+
+-- ========================
+-- ClassSection Table
+-- ========================
+CREATE TABLE ClassSection (
+    Section_id INT PRIMARY KEY,
+    Batch VARCHAR(50),
+    session VARCHAR(50),
+    Faculty_id INT,
+    FOREIGN KEY (Faculty_id) REFERENCES Faculty(Emp_id)
+);
+
+-- ========================
+-- Student Table
+-- ========================
+CREATE TABLE Student (
+    Roll_No INT PRIMARY KEY,
+    Sname VARCHAR(100) NOT NULL,
+    date_of_Birth DATE,
+    Age INT,
+    mobile_no VARCHAR(15),
+    email_id VARCHAR(100),
+    S_Address VARCHAR(255),
+    HouseNo_locality VARCHAR(255),
+    pincode VARCHAR(10),
+    City VARCHAR(50),
+    Section_id INT,
+    Course_id INT,
+    year_of_admission YEAR,
+    FOREIGN KEY (Section_id) REFERENCES ClassSection(Section_id),
+    FOREIGN KEY (Course_id) REFERENCES Course(Cid)
+);
+
+-- ========================
+-- Course Table
+-- ========================
+CREATE TABLE Course (
+    Cid INT PRIMARY KEY,
+    Cname VARCHAR(100) NOT NULL,
+    Discipline VARCHAR(100)
+);
+
+-- ========================
+-- Semester Table
+-- ========================
+CREATE TABLE Semester (
+    Semester_id INT PRIMARY KEY,
+    Course_id INT,
+    FOREIGN KEY (Course_id) REFERENCES Course(Cid)
+);
+
+-- ========================
+-- SubjectPaper Table
+-- ========================
+CREATE TABLE SubjectPaper (
+    PaperCode VARCHAR(20) PRIMARY KEY,
+    Pname VARCHAR(100) NOT NULL,
+    credit INT,
+    Semester_id INT,
+    FOREIGN KEY (Semester_id) REFERENCES Semester(Semester_id)
+);
+
+-- ========================
+-- Exam Table
+-- ========================
+CREATE TABLE Exam (
+    Exam_id INT PRIMARY KEY,
+    PaperCode VARCHAR(20),
+    Session VARCHAR(50),
+    Marks DECIMAL(5,2),
+    FOREIGN KEY (PaperCode) REFERENCES SubjectPaper(PaperCode)
+);
+
+-- ========================
+-- Performed Relationship (Student ↔ Exam)
+-- ========================
+CREATE TABLE Performed (
+    Roll_No INT,
+    Exam_id INT,
+    PRIMARY KEY (Roll_No, Exam_id),
+    FOREIGN KEY (Roll_No) REFERENCES Student(Roll_No),
+    FOREIGN KEY (Exam_id) REFERENCES Exam(Exam_id)
+);
+
+-- ========================
+-- Teaches Relationship (Faculty ↔ SubjectPaper)
+-- ========================
+CREATE TABLE Teaches (
+    Emp_id INT,
+    PaperCode VARCHAR(20),
+    session VARCHAR(50),
+    PRIMARY KEY (Emp_id, PaperCode),
+    FOREIGN KEY (Emp_id) REFERENCES Faculty(Emp_id),
+    FOREIGN KEY (PaperCode) REFERENCES SubjectPaper(PaperCode)
+);
+
+-- ========================
+-- EnrolledIn Relationship (Student ↔ Course)
+-- ========================
+CREATE TABLE EnrolledIn (
+    Roll_No INT,
+    Cid INT,
+    year_of_admission YEAR,
+    PRIMARY KEY (Roll_No, Cid),
+    FOREIGN KEY (Roll_No) REFERENCES Student(Roll_No),
+    FOREIGN KEY (Cid) REFERENCES Course(Cid)
+);
